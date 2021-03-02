@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Gravity Fieldset for Gravity Forms Fork
-Version: 0.3
+Version: 0.31
 Description: Extends the Gravity Forms plugin - adding a fieldset open and close field that can be used to create 'real' sections.
 Author: Bas van den Wijngaard & Harro Heijboer forked by Ben Freeman
 Text Domain: gravity-fieldset-for-gravity-forms
@@ -248,7 +248,7 @@ if (!class_exists('RAAK_GF_Fieldset')) :
 			
 			$custom_field_classes = $field->cssClass;
 			
-			if ( ( !is_admin() ) && ( $field['type'] == 'FieldsetBegin') ) :
+			if ( ( !is_admin() || wp_doing_ajax() ) && ( $field['type'] == 'FieldsetBegin') ) :
 				
 				$content .= '<fieldset class="gfieldset gform_fieldset_begin gform_fieldset '.$custom_field_classes.'">';
 
@@ -258,7 +258,7 @@ if (!class_exists('RAAK_GF_Fieldset')) :
 					
 				endif;
 
-			elseif ( ( !is_admin() ) && ( $field['type'] == 'FieldsetEnd' ) ) :
+			elseif ( ( !is_admin() || wp_doing_ajax() ) && ( $field['type'] == 'FieldsetEnd' ) ) :
 				
 				$content .= '</fieldset>';
 				
@@ -334,7 +334,7 @@ if (!class_exists('RAAK_GF_Fieldset')) :
 
 			$ul_classes = GFCommon::get_ul_classes($form);
 			
-			if ( ( !is_admin() ) && ( $field->type === 'FieldsetBegin' || $field->type === 'FieldsetEnd' ) ) :
+			if ( ( !is_admin() || wp_doing_ajax() ) && ( $field->type === 'FieldsetBegin' || $field->type === 'FieldsetEnd' ) ) :
 
 				$field_container = '</ul>{FIELD_CONTENT}<ul class="'.$ul_classes.'">';
 			
@@ -351,7 +351,7 @@ if (!class_exists('RAAK_GF_Fieldset')) :
 		public static function filter_gform_field_remove_label( $field_content, $field, $value, $lead_id, $form_id )
 		{
 			
-			if ( ( !is_admin() ) && ( $field->type === 'FieldsetBegin' || $field->type === 'FieldsetEnd' ) ) :
+			if ( ( !is_admin() || wp_doing_ajax()) && ( $field->type === 'FieldsetBegin' || $field->type === 'FieldsetEnd' ) ) :
 			
 				$field_content = preg_replace( '/<label[^>]*>([\s\S]*?)<\/label[^>]*>/', '', $field_content );
 			
@@ -369,7 +369,7 @@ if (!class_exists('RAAK_GF_Fieldset')) :
 		public static function filter_gform_cleanup_html( $form_string, $form )
 		{
 			
-			if ( !is_admin() ) :
+			if ( !is_admin() || wp_doing_ajax() ) :
 				
 				$form_string = preg_replace( '#<(ul+)[^>]*>([[:space:]]|&nbsp;)*</ul>#', '', $form_string );
 						
